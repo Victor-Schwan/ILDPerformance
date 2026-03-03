@@ -56,14 +56,24 @@ for i in {0..3}; do
 
 	for j in {0..8}; do
 
-		Marlin MarlinStdReco.xml \
-			--constant.DetectorModel=${ILDMODELRECO} \
-			--global.LCIOInputFiles=Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
-			--constant.RunBeamCalReco=false \
-			--constant.lcgeo_DIR=$lcgeo_DIR \
-			--constant.OutputBaseName=${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
-			--MyRecoMCTruthLinker.UsingParticleGun=true \
-			>${LOGFILEPATH}/RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+		k4run ILDReconstruction.py \
+			--detectorModel ${ILDMODELRECO} \
+			--inputFiles Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+			--noBeamCalReco \
+			--outputFileBase Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
+			--lcioOutput only \
+			-n -1
+		# --MyRecoMCTruthLinker.UsingParticleGun=true
+		>${LOGFILEPATH}/RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+
+		#		Marlin MarlinStdReco.xml \
+		#			--constant..DetectorModel=ILD_l5_o1_v02 \
+		#			--global.LCIOInputFiles=Results/SimFiles/${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+		#			--constant.RunBeamCalReco=false \
+		#			--constant.lcgeo_DIR=$lcgeo_DIR \
+		#			--constant.OutputBaseName=${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
+		#			--MyRecoMCTruthLinker.UsingParticleGun=true \
+		#			>${LOGFILEPATH}/RECO_${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 	done
 	wait
@@ -71,8 +81,7 @@ done
 wait
 
 # move all to folder RecoFiles
-
-mv ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_REC.slcio Results/RecoFiles
+# mv ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_REC.slcio Results/RecoFiles
 
 # cleanup
 rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_DST.slcio
