@@ -14,19 +14,18 @@ INFILE=/nfs/dust/ilc/group/ild/dbd-data/500/6f/E0500-TDR_ws.Pyycyyc.Gwhizard-1.9
 #==================================================
 #SIMULATION
 NSkip=0
-for i in {0..9}
-do
-echo "NSkip ${NSkip}"
+for i in {0..9}; do
+	echo "NSkip ${NSkip}"
 
-ddsim \
-    --inputFiles $INFILE  \
-    --outputFile ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i}_SIM.slcio \
-    --compactFile $lcgeo_DIR/ILD/compact/${ILDMODEL}/${ILDMODEL}.xml \
-    --steeringFile ddsim_steer.py \
-    --numberOfEvents 100  \
-    --skipNEvents ${NSkip} &
+	ddsim \
+		--inputFiles $INFILE \
+		--outputFile ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i}_SIM.slcio \
+		--compactFile $lcgeo_DIR/ILD/compact/${ILDMODEL}/${ILDMODEL}.xml \
+		--steeringFile ddsim_steer.py \
+		--numberOfEvents 100 \
+		--skipNEvents ${NSkip} &
 
-NSkip=`expr $NSkip + 100`
+	NSkip=$(expr $NSkip + 100)
 
 done
 wait
@@ -35,17 +34,16 @@ mv ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_
 
 #=================================================
 # RECONSTRUCTION
-for i in {0..9}
-do
+for i in {0..9}; do
 
-Marlin MarlinStdReco.xml \
-    --constant..DetectorModel=ILD_l5_o1_v02 \
-    --global.LCIOInputFiles=Results/SimFiles/${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i}_SIM.slcio \
-    --constant.RunBeamCalReco=false \
-    --constant.lcgeo_DIR=$lcgeo_DIR \
-    --constant.OutputBaseName=${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i} \
-    --MyRecoMCTruthLinker.UsingParticleGun=false \
-> RECO_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i}.out &
+	Marlin MarlinStdReco.xml \
+		--constant..DetectorModel=ILD_l5_o1_v02 \
+		--global.LCIOInputFiles=Results/SimFiles/${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i}_SIM.slcio \
+		--constant.RunBeamCalReco=false \
+		--constant.lcgeo_DIR=$lcgeo_DIR \
+		--constant.OutputBaseName=${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i} \
+		--MyRecoMCTruthLinker.UsingParticleGun=false \
+		>RECO_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i}.out &
 
 done
 wait
@@ -54,7 +52,7 @@ wait
 
 mv ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_*_REC.slcio Results/RecoFiles
 
-# cleanup 
+# cleanup
 rm ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_*_DST.slcio
 rm ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_*_AIDA.root
 rm ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_*_PfoAnalysis.root
@@ -63,25 +61,22 @@ rm ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_
 # diagnostics
 
 Marlin Diagnostics_ILD_l5_v02_ttbar.xml \
-    --constant.lcgeo_DIR=$lcgeo_DIR \
-    --constant.ILCSoftVersion=${ILCSOFTVER} \
-    --MyAIDAProcessor.FileName=analysis_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05 \
-    --MyDiagnostics.PhysSampleOn=true \
-> DIAG_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.out
-
+	--constant.lcgeo_DIR=$lcgeo_DIR \
+	--constant.ILCSoftVersion=${ILCSOFTVER} \
+	--MyAIDAProcessor.FileName=analysis_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05 \
+	--MyDiagnostics.PhysSampleOn=true \
+	>DIAG_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.out
 
 # move all to folder Analysis
 
-cp  analysis_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.root ../Results/Analysis/analysis_${ILDMODEL}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.root
-mv  analysis_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.root ../Results/Analysis
-
+cp analysis_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.root ../Results/Analysis/analysis_${ILDMODEL}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.root
+mv analysis_${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05.root ../Results/Analysis
 
 # move log files to folder logFiles
 
 #mv *.out logFiles
 #mv *.err logFiles
 #mv *.log logFiles
-
 
 #==================================================
 # generate monitor plots
