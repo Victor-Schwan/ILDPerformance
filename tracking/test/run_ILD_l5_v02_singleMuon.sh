@@ -6,9 +6,9 @@
 
 ILDMODELRECO=ILD_l5_o1_v02
 ILDMODELSIM=ILD_l5_v02
-ILCSOFTVER=v02-03-04
+ILCSOFTVER=key4hep_night
 
-. /afs/desy.de/project/ilcsoft/sw/x86_64_gcc131_el9/${ILCSOFTVER}/init_ilcsoft.sh
+. /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
 
 PolarAngles=('10' '20' '40' '85')
 Mom=('1' '3' '5' '10' '15' '25' '50' '100' '200')
