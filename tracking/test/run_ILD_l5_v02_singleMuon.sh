@@ -21,14 +21,14 @@ for i in {0..3}; do
 
 	for j in {0..8}; do
 
-		python lcio_particle_gun.py ${Mom[j]} ${PolarAngles[i]} mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio 13 -1. &
+		python lcio_particle_gun.py ${Mom[j]} ${PolarAngles[i]} Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio 13 -1. &
 
 	done
 
 done
 wait
 
-mv mcparticles_MuonsAngle_*_Mom_*.slcio Results/GenFiles
+# mv mcparticles_MuonsAngle_*_Mom_*.slcio Results/GenFiles
 
 #==================================================
 # SIMULATION
@@ -38,7 +38,7 @@ for i in {0..3}; do
 
 		ddsim \
 			--inputFiles Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio \
-			--outputFile ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+			--outputFile Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
 			--compactFile $lcgeo_DIR/ILD/compact/${ILDMODELSIM}/${ILDMODELSIM}.xml \
 			--steeringFile ddsim_steer.py \
 			--numberOfEvents -1 &
@@ -48,7 +48,7 @@ for i in {0..3}; do
 done
 wait
 
-mv ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_SIM.slcio Results/SimFiles
+# mv ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_SIM.slcio Results/SimFiles
 
 #==================================================
 # RECONSTRUCTION
