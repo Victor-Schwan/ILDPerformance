@@ -13,6 +13,8 @@ ILCSOFTVER=key4hep_night
 PolarAngles=('10' '20' '40' '85')
 Mom=('1' '3' '5' '10' '15' '25' '50' '100' '200')
 
+OUTPUTPATH=../Results/MonitorPlots
+LOGFILEPATH=logFiles
 #==================================================
 # GENERATION - particle gun
 for i in {0..3}; do
@@ -61,7 +63,7 @@ for i in {0..3}; do
 			--constant.lcgeo_DIR=$lcgeo_DIR \
 			--constant.OutputBaseName=${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
 			--MyRecoMCTruthLinker.UsingParticleGun=true \
-			>RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+			>${LOGFILEPATH}/RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 	done
 	wait
@@ -93,7 +95,7 @@ for i in {0..3}; do
 			--MyAIDAProcessor.FileName=analysis_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
 			--MyDiagnostics.FillBigTTree=true \
 			--MyDiagnostics.PhysSampleOn=false \
-			>DIAG_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+			>${LOGFILEPATH}/DIAG_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 	done
 	wait
@@ -130,7 +132,6 @@ root -b -q PResolutionL5.C
 root -b -q meanL5.C
 root -b -q sigmaL5.C
 
-OUTPUTPATH=../Results/MonitorPlots
 
 cp IPResolution_${ILDMODELRECO}.png ${OUTPUTPATH}/IPResolution_${ILDMODELRECO}_${ILCSOFTVER}.png
 cp D0_fit_${ILDMODELRECO}.pdf ${OUTPUTPATH}/D0_fit_${ILDMODELRECO}_${ILCSOFTVER}.pdf
