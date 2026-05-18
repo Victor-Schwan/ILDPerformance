@@ -62,8 +62,8 @@ for i in {0..3}; do
 			--noBeamCalReco \
 			--outputFileBase Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
 			--lcioOutput only \
+			--usingParticleGun \
 			-n -1
-		# --MyRecoMCTruthLinker.UsingParticleGun=true
 		>${LOGFILEPATH}/RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 		#		Marlin MarlinStdReco.xml \
