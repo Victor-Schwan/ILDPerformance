@@ -4,7 +4,8 @@
 # Running shell script in parallel over multiple cores
 #==============================================================
 
-ILDMODEL=ILD_l5_v02
+ILDMODELRECO=ILD_l5_o1_v02
+ILDMODELSIM=ILD_l5_v02
 ILCSOFTVER=v02-03-04
 
 . /afs/desy.de/project/ilcsoft/sw/x86_64_gcc131_el9/${ILCSOFTVER}/init_ilcsoft.sh
@@ -35,8 +36,8 @@ for i in {0..3}; do
 
 		ddsim \
 			--inputFiles Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio \
-			--outputFile ${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
-			--compactFile $lcgeo_DIR/ILD/compact/${ILDMODEL}/${ILDMODEL}.xml \
+			--outputFile ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+			--compactFile $lcgeo_DIR/ILD/compact/${ILDMODELSIM}/${ILDMODELSIM}.xml \
 			--steeringFile ddsim_steer.py \
 			--numberOfEvents -1 &
 
@@ -45,7 +46,7 @@ for i in {0..3}; do
 done
 wait
 
-mv ${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_SIM.slcio Results/SimFiles
+mv ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_SIM.slcio Results/SimFiles
 
 #==================================================
 # RECONSTRUCTION
@@ -54,13 +55,13 @@ for i in {0..3}; do
 	for j in {0..8}; do
 
 		Marlin MarlinStdReco.xml \
-			--constant.DetectorModel=ILD_l5_o1_v02 \
-			--global.LCIOInputFiles=Results/SimFiles/${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+			--constant.DetectorModel=${ILDMODELRECO} \
+			--global.LCIOInputFiles=Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
 			--constant.RunBeamCalReco=false \
 			--constant.lcgeo_DIR=$lcgeo_DIR \
-			--constant.OutputBaseName=${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
+			--constant.OutputBaseName=${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
 			--MyRecoMCTruthLinker.UsingParticleGun=true \
-			>RECO_${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+			>RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 	done
 	wait
@@ -69,12 +70,12 @@ wait
 
 # move all to folder RecoFiles
 
-mv ${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_REC.slcio Results/RecoFiles
+mv ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_REC.slcio Results/RecoFiles
 
 # cleanup
-rm ${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_DST.slcio
-rm ${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_AIDA.root
-rm ${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_PfoAnalysis.root
+rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_DST.slcio
+rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_AIDA.root
+rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_PfoAnalysis.root
 
 #==================================================
 # start Diagnostics
@@ -84,15 +85,15 @@ for i in {0..3}; do
 
 		# diagnostics
 
-		INFILE=Results/RecoFiles/${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_REC.slcio
+		INFILE=Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_REC.slcio
 
 		Marlin DDDiagnostics.xml \
 			--global.LCIOInputFiles=$INFILE \
-			--InitDD4hep.DD4hepXMLFile=$lcgeo_DIR/ILD/compact/ILD_l5_v02/ILD_l5_v02.xml \
-			--MyAIDAProcessor.FileName=analysis_${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
+			--InitDD4hep.DD4hepXMLFile=$lcgeo_DIR/ILD/compact/${ILDMODELRECO}/${ILDMODELRECO}.xml \
+			--MyAIDAProcessor.FileName=analysis_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
 			--MyDiagnostics.FillBigTTree=true \
 			--MyDiagnostics.PhysSampleOn=false \
-			>DIAG_${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+			>DIAG_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 	done
 	wait
@@ -104,14 +105,14 @@ for i in {0..3}; do
 
 	for j in {0..8}; do
 
-		cp analysis_${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.root ../Results/Analysis/analysis_${ILDMODEL}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.root
+		cp analysis_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.root ../Results/Analysis/analysis_${ILDMODELRECO}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.root
 
 	done
 done
 
 # move all to folder Analysis
 
-mv analysis_${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_*_Mom_*.root ../Results/Analysis
+mv analysis_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*.root ../Results/Analysis
 
 # move log files to folder logFiles
 
@@ -131,9 +132,9 @@ root -b -q sigmaL5.C
 
 OUTPUTPATH=../Results/MonitorPlots
 
-cp IPResolution_${ILDMODEL}.png ${OUTPUTPATH}/IPResolution_${ILDMODEL}_${ILCSOFTVER}.png
-cp D0_fit_${ILDMODEL}.pdf ${OUTPUTPATH}/D0_fit_${ILDMODEL}_${ILCSOFTVER}.pdf
-cp PResolution_${ILDMODEL}.png ${OUTPUTPATH}/PResolution_${ILDMODEL}_${ILCSOFTVER}.png
-cp PR_fit_${ILDMODEL}.pdf ${OUTPUTPATH}/PR_fit_${ILDMODEL}_${ILCSOFTVER}.pdf
-cp pull_mean_${ILDMODEL}.png ${OUTPUTPATH}/pull_mean_${ILDMODEL}_${ILCSOFTVER}.png
-cp pull_sigma_${ILDMODEL}.png ${OUTPUTPATH}/pull_sigma_${ILDMODEL}_${ILCSOFTVER}.png
+cp IPResolution_${ILDMODELRECO}.png ${OUTPUTPATH}/IPResolution_${ILDMODELRECO}_${ILCSOFTVER}.png
+cp D0_fit_${ILDMODELRECO}.pdf ${OUTPUTPATH}/D0_fit_${ILDMODELRECO}_${ILCSOFTVER}.pdf
+cp PResolution_${ILDMODELRECO}.png ${OUTPUTPATH}/PResolution_${ILDMODELRECO}_${ILCSOFTVER}.png
+cp PR_fit_${ILDMODELRECO}.pdf ${OUTPUTPATH}/PR_fit_${ILDMODELRECO}_${ILCSOFTVER}.pdf
+cp pull_mean_${ILDMODELRECO}.png ${OUTPUTPATH}/pull_mean_${ILDMODELRECO}_${ILCSOFTVER}.png
+cp pull_sigma_${ILDMODELRECO}.png ${OUTPUTPATH}/pull_sigma_${ILDMODELRECO}_${ILCSOFTVER}.png
