@@ -37,7 +37,7 @@ mv ${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_
 for i in {0..9}; do
 
 	Marlin MarlinStdReco.xml \
-		--constant..DetectorModel=ILD_l5_o1_v02 \
+		--constant.DetectorModel=ILD_l5_o1_v02 \
 		--global.LCIOInputFiles=Results/SimFiles/${ILDMODEL}_${ILCSOFTVER}_E0500-TDR_ws.Pyycyyc.Gwhizard-1.95.eR.pL.I36919.05_${i}_SIM.slcio \
 		--constant.RunBeamCalReco=false \
 		--constant.lcgeo_DIR=$lcgeo_DIR \

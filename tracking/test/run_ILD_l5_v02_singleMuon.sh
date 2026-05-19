@@ -54,7 +54,7 @@ for i in {0..3}; do
 	for j in {0..8}; do
 
 		Marlin MarlinStdReco.xml \
-			--constant..DetectorModel=ILD_l5_o1_v02 \
+			--constant.DetectorModel=ILD_l5_o1_v02 \
 			--global.LCIOInputFiles=Results/SimFiles/${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
 			--constant.RunBeamCalReco=false \
 			--constant.lcgeo_DIR=$lcgeo_DIR \
