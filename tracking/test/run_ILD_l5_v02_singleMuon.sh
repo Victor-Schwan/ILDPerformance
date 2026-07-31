@@ -2,7 +2,7 @@
 
 # --- Setup Environment ---
 if [ -z "${KEY4HEP_STACK:-}" ]; then
-    source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+	source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
 fi
 
 # Enable strict error tracking for production/pipeline safety
@@ -13,7 +13,7 @@ set -euo pipefail
 #==============================================================
 
 ILDMODELRECO=ILD_FCCee_v01 # ILD_l5_o1_v02
-ILDMODELSIM=ILD_FCCee_v01 # ILD_l5_v02
+ILDMODELSIM=ILD_FCCee_v01  # ILD_l5_v02
 ILCSOFTVER=key4hep_night
 
 ILDCONFIGDIR=$codeDir/ILDConfig/StandardConfig/production
@@ -22,10 +22,10 @@ export PYTHONPATH=${ILDCONFIGDIR}:${PYTHONPATH}
 
 # Set compact file root directory depending on detector model
 if [[ "${ILDMODELRECO}" == ILD_FCCee_v01 ||
-      "${ILDMODELRECO}" == ILD_FCCee_v02 ]]; then
-    COMPACTFILEDIR=$K4GEO/FCCee/ILD_FCCee/compact
+	"${ILDMODELRECO}" == ILD_FCCee_v02 ]]; then
+	COMPACTFILEDIR=$K4GEO/FCCee/ILD_FCCee/compact
 else
-    COMPACTFILEDIR=$lcgeo_DIR/ILD/compact
+	COMPACTFILEDIR=$lcgeo_DIR/ILD/compact
 fi
 
 PolarAngles=('10' '20' '40' '85')
@@ -50,11 +50,11 @@ for i in "${!PolarAngles[@]}"; do
 
 	for j in "${!Mom[@]}"; do
 
-                GENFILE="Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio"
-                if [[ -s "${GENFILE}" ]]; then
-                        echo "${GENFILE} exists, skipping generation."
-                        continue
-                fi
+		GENFILE="Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio"
+		if [[ -s "${GENFILE}" ]]; then
+			echo "${GENFILE} exists, skipping generation."
+			continue
+		fi
 
 		python lcio_particle_gun.py ${Mom[j]} ${PolarAngles[i]} ${GENFILE} 13 -1. &
 
@@ -71,11 +71,11 @@ for i in "${!PolarAngles[@]}"; do
 
 	for j in "${!Mom[@]}"; do
 
-                SIMFILE="Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio"
-                if [[ -s "${SIMFILE}" ]]; then
-                        echo "${SIMFILE} exists, skipping simulation."
-                        continue
-                fi
+		SIMFILE="Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio"
+		if [[ -s "${SIMFILE}" ]]; then
+			echo "${SIMFILE} exists, skipping simulation."
+			continue
+		fi
 
 		ddsim \
 			--inputFiles Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio \
@@ -98,11 +98,11 @@ for i in "${!PolarAngles[@]}"; do
 
 	for j in "${!Mom[@]}"; do
 
-                RECOFILE="${TESTDIR}/Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_REC.slcio"
-                if [[ -s "${RECOFILE}" ]]; then
-                       echo "${RECOFILE} exists, skipping reconstruction."
-                       continue
-                fi
+		RECOFILE="${TESTDIR}/Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_REC.slcio"
+		if [[ -s "${RECOFILE}" ]]; then
+			echo "${RECOFILE} exists, skipping reconstruction."
+			continue
+		fi
 
 		EXTRA_FLAGS=()
 		if [[ "${ILDMODELRECO}" == "ILD_FCCee_v01" ||
@@ -110,16 +110,16 @@ for i in "${!PolarAngles[@]}"; do
 			EXTRA_FLAGS=(--trackMerge --doHLR)
 		fi
 
-        k4run ${ILDRECO} \
+		k4run ${ILDRECO} \
 			--detectorModel ${ILDMODELRECO} \
 			--inputFiles ${TESTDIR}/Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
 			--noBeamCalReco \
 			--outputFileBase ${RECOFILE} \
 			--lcioOutput only \
 			--usingParticleGun \
-                        "${EXTRA_FLAGS[@]}" \
+			"${EXTRA_FLAGS[@]}" \
 			-n -1 \
-		>${TESTDIR}/${LOGFILEPATH}/RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+			>${TESTDIR}/${LOGFILEPATH}/RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 		#		Marlin MarlinStdReco.xml \
 		#			--constant..DetectorModel=ILD_l5_o1_v02 \
@@ -212,7 +212,6 @@ root -b -q "D0ResolutionL5.C(\"${ILDMODELRECO}\")"
 root -b -q "PResolutionL5.C(\"${ILDMODELRECO}\")"
 root -b -q "meanL5.C(\"${ILDMODELRECO}\")"
 root -b -q "sigmaL5.C(\"${ILDMODELRECO}\")"
-
 
 cp IPResolution_${ILDMODELRECO}.png ${OUTPUTPATH}/IPResolution_${ILDMODELRECO}_${ILCSOFTVER}.png
 cp D0_fit_${ILDMODELRECO}.pdf ${OUTPUTPATH}/D0_fit_${ILDMODELRECO}_${ILCSOFTVER}.pdf
