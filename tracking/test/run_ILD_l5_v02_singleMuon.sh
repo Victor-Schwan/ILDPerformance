@@ -50,7 +50,13 @@ for i in "${!PolarAngles[@]}"; do
 
 	for j in "${!Mom[@]}"; do
 
-		python lcio_particle_gun.py ${Mom[j]} ${PolarAngles[i]} Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio 13 -1. &
+                GENFILE="Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio"
+                if [[ -s "${GENFILE}" ]]; then
+                        echo "${GENFILE} exists, skipping generation."
+                        continue
+                fi
+
+		python lcio_particle_gun.py ${Mom[j]} ${PolarAngles[i]} ${GENFILE} 13 -1. &
 
 	done
 
@@ -65,9 +71,15 @@ for i in "${!PolarAngles[@]}"; do
 
 	for j in "${!Mom[@]}"; do
 
+                SIMFILE="Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio"
+                if [[ -s "${SIMFILE}" ]]; then
+                        echo "${SIMFILE} exists, skipping simulation."
+                        continue
+                fi
+
 		ddsim \
 			--inputFiles Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio \
-			--outputFile Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+			--outputFile ${SIMFILE} \
 			--compactFile ${COMPACTFILEDIR}/${ILDMODELSIM}/${ILDMODELSIM}.xml \
 			--steeringFile ${ILDCONFIGDIR}/ddsim_steer.py \
 			--numberOfEvents -1 &
@@ -86,6 +98,12 @@ for i in "${!PolarAngles[@]}"; do
 
 	for j in "${!Mom[@]}"; do
 
+                RECOFILE="${TESTDIR}/Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_REC.slcio"
+                if [[ -s "${RECOFILE}" ]]; then
+                       echo "${RECOFILE} exists, skipping reconstruction."
+                       continue
+                fi
+
 		EXTRA_FLAGS=()
 		if [[ "${ILDMODELRECO}" == "ILD_FCCee_v01" ||
 			"${ILDMODELRECO}" == "ILD_FCCee_v02" ]]; then
@@ -96,7 +114,7 @@ for i in "${!PolarAngles[@]}"; do
 			--detectorModel ${ILDMODELRECO} \
 			--inputFiles ${TESTDIR}/Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
 			--noBeamCalReco \
-			--outputFileBase ${TESTDIR}/Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
+			--outputFileBase ${RECOFILE} \
 			--lcioOutput only \
 			--usingParticleGun \
                         "${EXTRA_FLAGS[@]}" \
