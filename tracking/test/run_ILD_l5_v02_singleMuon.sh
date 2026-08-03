@@ -98,7 +98,8 @@ for i in "${!PolarAngles[@]}"; do
 
 	for j in "${!Mom[@]}"; do
 
-		RECOFILE="${TESTDIR}/Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_REC.slcio"
+		RECOBASE="${TESTDIR}/Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}"
+		RECOFILE="${RECOBASE}_REC.slcio"
 		if [[ -s "${RECOFILE}" ]]; then
 			echo "${RECOFILE} exists, skipping reconstruction."
 			continue
@@ -114,7 +115,7 @@ for i in "${!PolarAngles[@]}"; do
 			--detectorModel ${ILDMODELRECO} \
 			--inputFiles ${TESTDIR}/Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
 			--noBeamCalReco \
-			--outputFileBase ${RECOFILE} \
+			--outputFileBase ${RECOBASE} \
 			--lcioOutput only \
 			--usingParticleGun \
 			"${EXTRA_FLAGS[@]}" \
