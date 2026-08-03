@@ -140,11 +140,6 @@ cd "${TESTDIR}"
 # move all to folder RecoFiles
 # mv ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_REC.slcio Results/RecoFiles
 
-# cleanup
-rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_DST.slcio
-rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_AIDA.root
-rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_PfoAnalysis.root
-
 #==================================================
 # start Diagnostics
 for i in "${!PolarAngles[@]}"; do
