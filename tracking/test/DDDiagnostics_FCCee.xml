@@ -14,7 +14,7 @@
     <constant name="DetectorCompactFile"
               value="FCCee/ILD_FCCee/compact/ILD_FCCee_v01/ILD_FCCee_v01.xml"/>
     <!--Track collection to study; the truth link names below are derived from it-->
-    <constant name="TrackCollection" value="MarlinTrkTracks"/>
+    <constant name="TrackCollection" value="RefittedCluWithSiTracks"/>
   </constants>
 
   <execute>
