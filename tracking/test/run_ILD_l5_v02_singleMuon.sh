@@ -6,27 +6,29 @@
 
 ILDMODELRECO=ILD_l5_o1_v02
 ILDMODELSIM=ILD_l5_v02
-ILCSOFTVER=v02-03-04
+ILCSOFTVER=key4hep_night
 
-. /afs/desy.de/project/ilcsoft/sw/x86_64_gcc131_el9/${ILCSOFTVER}/init_ilcsoft.sh
+. /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
 
 PolarAngles=('10' '20' '40' '85')
 Mom=('1' '3' '5' '10' '15' '25' '50' '100' '200')
 
+OUTPUTPATH=../Results/MonitorPlots
+LOGFILEPATH=logFiles
 #==================================================
 # GENERATION - particle gun
 for i in {0..3}; do
 
 	for j in {0..8}; do
 
-		python lcio_particle_gun.py ${Mom[j]} ${PolarAngles[i]} mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio 13 -1. &
+		python lcio_particle_gun.py ${Mom[j]} ${PolarAngles[i]} Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio 13 -1. &
 
 	done
 
 done
 wait
 
-mv mcparticles_MuonsAngle_*_Mom_*.slcio Results/GenFiles
+# mv mcparticles_MuonsAngle_*_Mom_*.slcio Results/GenFiles
 
 #==================================================
 # SIMULATION
@@ -36,7 +38,7 @@ for i in {0..3}; do
 
 		ddsim \
 			--inputFiles Results/GenFiles/mcparticles_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.slcio \
-			--outputFile ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+			--outputFile Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
 			--compactFile $lcgeo_DIR/ILD/compact/${ILDMODELSIM}/${ILDMODELSIM}.xml \
 			--steeringFile ddsim_steer.py \
 			--numberOfEvents -1 &
@@ -46,7 +48,7 @@ for i in {0..3}; do
 done
 wait
 
-mv ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_SIM.slcio Results/SimFiles
+# mv ${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_SIM.slcio Results/SimFiles
 
 #==================================================
 # RECONSTRUCTION
@@ -54,14 +56,24 @@ for i in {0..3}; do
 
 	for j in {0..8}; do
 
-		Marlin MarlinStdReco.xml \
-			--constant.DetectorModel=${ILDMODELRECO} \
-			--global.LCIOInputFiles=Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
-			--constant.RunBeamCalReco=false \
-			--constant.lcgeo_DIR=$lcgeo_DIR \
-			--constant.OutputBaseName=${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
-			--MyRecoMCTruthLinker.UsingParticleGun=true \
-			>RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+		k4run ILDReconstruction.py \
+			--detectorModel ${ILDMODELRECO} \
+			--inputFiles Results/SimFiles/${ILDMODELSIM}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+			--noBeamCalReco \
+			--outputFileBase Results/RecoFiles/${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
+			--lcioOutput only \
+			--usingParticleGun \
+			-n -1
+		>${LOGFILEPATH}/RECO_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+
+		#		Marlin MarlinStdReco.xml \
+		#			--constant..DetectorModel=ILD_l5_o1_v02 \
+		#			--global.LCIOInputFiles=Results/SimFiles/${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}_SIM.slcio \
+		#			--constant.RunBeamCalReco=false \
+		#			--constant.lcgeo_DIR=$lcgeo_DIR \
+		#			--constant.OutputBaseName=${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
+		#			--MyRecoMCTruthLinker.UsingParticleGun=true \
+		#			>${LOGFILEPATH}/RECO_${ILDMODEL}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 	done
 	wait
@@ -69,8 +81,7 @@ done
 wait
 
 # move all to folder RecoFiles
-
-mv ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_REC.slcio Results/RecoFiles
+# mv ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_REC.slcio Results/RecoFiles
 
 # cleanup
 rm ${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_*_Mom_*_DST.slcio
@@ -93,7 +104,7 @@ for i in {0..3}; do
 			--MyAIDAProcessor.FileName=analysis_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]} \
 			--MyDiagnostics.FillBigTTree=true \
 			--MyDiagnostics.PhysSampleOn=false \
-			>DIAG_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
+			>${LOGFILEPATH}/DIAG_${ILDMODELRECO}_${ILCSOFTVER}_MuonsAngle_${PolarAngles[i]}_Mom_${Mom[j]}.out &
 
 	done
 	wait
@@ -130,7 +141,6 @@ root -b -q "PResolutionL5.C(\"${ILDMODELRECO}\")"
 root -b -q "meanL5.C(\"${ILDMODELRECO}\")"
 root -b -q "sigmaL5.C(\"${ILDMODELRECO}\")"
 
-OUTPUTPATH=../Results/MonitorPlots
 
 cp IPResolution_${ILDMODELRECO}.png ${OUTPUTPATH}/IPResolution_${ILDMODELRECO}_${ILCSOFTVER}.png
 cp D0_fit_${ILDMODELRECO}.pdf ${OUTPUTPATH}/D0_fit_${ILDMODELRECO}_${ILCSOFTVER}.pdf
