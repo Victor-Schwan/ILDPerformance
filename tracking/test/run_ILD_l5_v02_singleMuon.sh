@@ -21,7 +21,7 @@ RERUN_RECO=false
 
 # --- DEBUG MODE ---
 # Set to 'true' to run only one angle/momentum combination and stop after DDDiagnostics
-DEBUG=false
+DEBUG=true
 # ------------------
 
 ILDMODELRECO=ILD_FCCee_v01 # ILD_l5_o1_v02
